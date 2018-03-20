@@ -3,7 +3,7 @@ $(document).ready(() => {
   let pickedTopic;
 
   const topics = [
-    "Anger",
+    "Rage",
     "Surprise",
     "Joy",
     "Trust",
