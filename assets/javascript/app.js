@@ -1,6 +1,7 @@
 $(document).ready(() => {
 
   let pickedTopic;
+
   const topics = [
     "Anger",
     "Surprise",
@@ -10,6 +11,7 @@ $(document).ready(() => {
     "Fear",
     "Disgust"
   ];
+
   const colors = [
     "rgba(255, 0, 0, 0.6)",
     "rgba(255, 127, 0, 0.6)",
@@ -19,19 +21,9 @@ $(document).ready(() => {
     "rgba(75, 0, 30, 0.6)",
     "rgba(148, 0, 211, 0.6)"
   ];
+
   let gifs = [];
-  const sampleImages = [
-    "http://imgsv.imaging.nikon.com/lineup/lens/zoom/normalzoom/af-s_dx_18-300mmf_35-56g_ed_vr/img/sample/sample4_l.jpg",
-    "http://imaging.nikon.com/lineup/lens/zoom/normalzoom/af-s_dx_18-140mmf_35-56g_ed_vr/img/sample/sample1_l.jpg",
-    "http://myanmareiti.org/sites/default/files/sample-5_0.jpg",
-    "http://www.frankieballard.com/sites/g/files/g2000005856/f/Sample-image10-highres.jpg",
-    "https://i.ytimg.com/vi/RHLknisJ-Sg/maxresdefault.jpg",
-    "http://www.cameraegg.org/wp-content/uploads/2015/06/canon-powershot-g3-x-sample-images-1.jpg",
-    "http://www.tarloandgraham.com/wp-content/uploads/2013/05/sample-1.jpg",
-    "https://nikonrumors.com/wp-content/uploads/2014/03/Nikon-1-V3-sample-photo.jpg",
-    "https://4.img-dpreview.com/files/p/E~TS590x0~articles/3925134721/0266554465.jpeg",
-    "https://www.visioncritical.com/wp-content/uploads/2014/12/BLG_Andrew-G.-River-Sample_09.13.12.png"
-  ];
+
   // GIPHY API KEY
   const myKey = "Ab7efgCTM4wUS3UD0wzdSdgIYDyj8H0q";
   let topicDiv;
@@ -78,40 +70,37 @@ $(document).ready(() => {
     return "rgba(" + r + ", " + g + ", " + b + ", 0.6)";
   }
 
-  function getGifs(topic, index) {
-    console.log(topic);
-    $.ajax({
-      url: "http://api.giphy.com/v1/gifs/search?q=" +
-            topic +
-            "&api_key=Ab7efgCTM4wUS3UD0wzdSdgIYDyj8H0q&limit=10",
-      method: "GET"
-    }).then(function(response) {
-       gifs.push(response.data[index].images.fixed_width.url);
-    });
-  }
-
   // EVENT LISTNERS
   // ========================================================
-  $(document).on("click", ".topic", function() {
+  $(document).on("click", ".topic", function(e) {
     if (!$(this).hasClass("expanded")) {
+      $(this).addClass("expanded");
       // THIS IS WHAT HAPPENS ON EXPANSION
-      gifs = [];
       pickedTopic = $(this).attr("data-topic");
       $(this).empty();
       let title = $("<h1 class='title'>" + pickedTopic + "</h1>");
       let gifSection = $("<div class='gifSection'></div>");
-      let gif = $("<img class='gif'></div>");
       $(this).append(title, gifSection);
-      for(let i = 0; i < sampleImages.length; i++) {
-        getGifs(pickedTopic, i);
-        gifSection.append("<img class='gif' src=" + gifs[i] + ">");
+      // AJAX CALL
+      for(let i = 0; i < 10; i++) {
+        $.ajax({
+          url: "https://api.giphy.com/v1/gifs/search?q=" +
+                pickedTopic +
+                "&api_key=Ab7efgCTM4wUS3UD0wzdSdgIYDyj8H0q&limit=10",
+          method: "GET"
+        }).then(function(response) {
+          gifSection.append("<img class='gif' src=" + response.data[i].images.fixed_width.url + ">");
+        });
       }
     } else if ($(this).hasClass("expanded")) {
       // THIS IS WHAT HAPPENS ON COLLAPSE
+      if(e.target !== e.currentTarget) return;
       $(this).html("<p>" + $(this).attr("data-topic") + "</p>");
+      $(this).removeClass("expanded");
     }
-    $(this).toggleClass("expanded");
-    console.log(gifs);
+    // $(this).toggleClass("expanded");
+    
+    // console.log(gifs);
   });
   
   $("#addNew").on("click", function() {
