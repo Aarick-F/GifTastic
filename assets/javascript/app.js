@@ -108,6 +108,7 @@ $(document).ready(() => {
     if(newTopic.length > 0 && topics.indexOf(newTopic) === -1) {
       topics.push(newTopic);
       generateList();
+      $("#newTopic").val("");
     } else {
       console.log("not long enough");
     }
