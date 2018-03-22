@@ -1,7 +1,5 @@
 $(document).ready(() => {
 
-  let pickedTopic;
-
   const topics = [
     "Rage",
     "Surprise",
@@ -22,12 +20,18 @@ $(document).ready(() => {
     "rgba(148, 0, 211, 0.6)"
   ];
 
-  let gifs = [];
-
   // GIPHY API KEY
   const myKey = "Ab7efgCTM4wUS3UD0wzdSdgIYDyj8H0q";
+  let pickedTopic;
   let topicDiv;
+  let numberOfGifs;
   let isExpanded = true;
+
+  const forTheSneakyOnes = "Hey There. I noticed you were trying to input some angle brackets. "
+                            + "Look, I'm not pointing fingers, but if you were trying "
+                            + "to run scripts in here, stop that. That is very rude "
+                            + "and also against the Geneva Convention I think. Anyways, " 
+                            + "quit messing around and try a different topic.";
 
   generateList();
 
@@ -70,47 +74,56 @@ $(document).ready(() => {
     return "rgba(" + r + ", " + g + ", " + b + ", 0.6)";
   }
 
+  function getGifs(amount, section) {
+    let data = "";
+    $.ajax({
+      url: "https://api.giphy.com/v1/gifs/search?q=" +
+            pickedTopic +
+            "&api_key=Ab7efgCTM4wUS3UD0wzdSdgIYDyj8H0q&limit=" + amount,
+      method: "GET"
+    }).then(function(response) {
+      data = response.data;
+      for(let i = 0; i < data.length; i++) {
+        section.append("<img class='gif' src=" + data[i].images.fixed_width.url + ">");
+      }
+    });
+  }
+
   // EVENT LISTNERS
   // ========================================================
   $(document).on("click", ".topic", function(e) {
     if (!$(this).hasClass("expanded")) {
+      numberOfGifs = 10;
       $(this).addClass("expanded");
       // THIS IS WHAT HAPPENS ON EXPANSION
       pickedTopic = $(this).attr("data-topic");
       $(this).empty();
       let title = $("<h1 class='title'>" + pickedTopic + "</h1>");
       let gifSection = $("<div class='gifSection'></div>");
+      let moreButton = $("<div class='moreButton'>MORE</div>");
       $(this).append(title, gifSection);
-      // AJAX CALL
-      for(let i = 0; i < 10; i++) {
-        $.ajax({
-          url: "https://api.giphy.com/v1/gifs/search?q=" +
-                pickedTopic +
-                "&api_key=Ab7efgCTM4wUS3UD0wzdSdgIYDyj8H0q&limit=10",
-          method: "GET"
-        }).then(function(response) {
-          gifSection.append("<img class='gif' src=" + response.data[i].images.fixed_width.url + ">");
-        });
-      }
+      getGifs(numberOfGifs, gifSection);
     } else if ($(this).hasClass("expanded")) {
       // THIS IS WHAT HAPPENS ON COLLAPSE
       if(e.target !== e.currentTarget) return;
       $(this).html("<p>" + $(this).attr("data-topic") + "</p>");
       $(this).removeClass("expanded");
     }
-    // $(this).toggleClass("expanded");
-    
-    // console.log(gifs);
   });
   
   $("#addNew").on("click", function() {
     let newTopic = $("#newTopic").val();
+    for(let i = 0; i < newTopic.length; i++) {
+      if(newTopic[i] === "<" || newTopic === ">") {
+        alert(forTheSneakyOnes);
+        newTopic = "";
+        break;
+      } 
+    }
     if(newTopic.length > 0 && topics.indexOf(newTopic) === -1) {
       topics.push(newTopic);
       generateList();
       $("#newTopic").val("");
-    } else {
-      console.log("not long enough");
     }
   });
 });
