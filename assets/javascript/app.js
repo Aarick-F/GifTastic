@@ -26,6 +26,7 @@ $(document).ready(() => {
   let topicDiv;
   let numberOfGifs;
   let isExpanded = true;
+  let still = false;
 
   const forTheSneakyOnes = "Hey There. I noticed you were trying to input some angle brackets. "
                             + "Look, I'm not pointing fingers, but if you were trying "
@@ -83,8 +84,9 @@ $(document).ready(() => {
       method: "GET"
     }).then(function(response) {
       data = response.data;
+      console.log(data);
       for(let i = 0; i < data.length; i++) {
-        section.append("<img class='gif' src=" + data[i].images.fixed_width.url + ">");
+        section.append("<div class='gif'><img src=" + data[i].images.fixed_width.url + "><h3>Rating: " + data[i].rating + "</h3></div>");
       }
     });
   }
@@ -124,6 +126,30 @@ $(document).ready(() => {
       topics.push(newTopic);
       generateList();
       $("#newTopic").val("");
+    }
+  });
+
+  $(document).on("click", ".gif img", function(e) {
+    if(e.target !== e.currentTarget) return;
+    $(this).toggleClass("still");
+    let url = $(this).attr("src");
+    if($(this).hasClass("still")) {
+      let newUrl = url.split("");
+      for(let i = 0; i < 4; i++) {
+        newUrl.pop();
+      }
+      newUrl = newUrl.join("");
+      newUrl += "_s.gif";
+      $(this).attr("src", newUrl);
+    } else {
+      let oldUrl = url;
+      oldUrl = oldUrl.split("");
+      for(let i = 0; i < 6; i++) {
+        oldUrl.pop();
+      }
+      oldUrl = oldUrl.join("");
+      oldUrl += ".gif";
+      $(this).attr("src", oldUrl);
     }
   });
 });

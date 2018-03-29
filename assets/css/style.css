@@ -92,8 +92,21 @@ body {
 }
 
 .gif {
-  width: 25%;
+  width: 30%;
   margin: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gif img {
+  width: 100%;
+}
+
+.gif h3 {
+  font-size: 1em;
+  margin-top: 5px;
+  font-weight: bold;
 }
 
 .title {
